@@ -1,0 +1,28 @@
+name: openfire
+services:
+  server:
+    image: nasqueron/openfire:latest
+    container_name: openfire-server
+    hostname: xmpp
+    restart: always
+    tty: true
+    ports:
+      - '5222:5222'
+      - '5223:5223'
+      - '5275:5275'
+      - '7070:7070'
+      - '7443:7443'
+      - '7777:7777'
+      - '172.17.0.1:59092:9090'
+      - '10000-10020:10000-10020'
+    volumes:
+      - /var/lib/srv/${USER}/docker/nasqueron/openfire/latest/rootfs/config/openfire:/var/lib/openfire
+      - /var/lib/srv/${USER}/docker/nasqueron/openfire/latest/rootfs/data/logs/openfire:/var/log/openfire
+      - /var/lib/srv/${USER}/docker/nasqueron/openfire/latest/rootfs/data/openfire/plugin-admin:/usr/share/openfire/plugin-admin
+    networks:
+      - openfire
+
+networks:
+  openfire:
+    name: openfire
+    external: false
