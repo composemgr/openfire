@@ -1,12 +1,24 @@
+# nginx proxy address - http://172.17.0.1:59092
+
 name: openfire
+x-logging: &default-logging
+  options:
+    max-size: '5m'
+    max-file: '1'
+  driver: json-file
+
 services:
-  server:
+  app:
     image: nasqueron/openfire:latest
-    container_name: openfire-server
-    hostname: xmpp
+    container_name: openfire-app
+    domainname: ${BASE_DOMAIN_NAME:-}
+    hostname: ${BASE_HOST_NAME:-$HOSTNAME}
     restart: always
     pull_policy: always
     tty: true
+    logging: *default-logging
+    environment: 
+      - TZ=${TZ:-America/New_York}
     ports:
       - '5222:5222'
       - '5223:5223'
@@ -14,8 +26,8 @@ services:
       - '7070:7070'
       - '7443:7443'
       - '7777:7777'
-      - '172.17.0.1:59092:9090'
       - '10000-10020:10000-10020'
+      - '172.17.0.1:59092:9090'
     volumes:
       - /var/lib/srv/${USER}/docker/nasqueron/openfire/latest/rootfs/config/openfire:/var/lib/openfire
       - /var/lib/srv/${USER}/docker/nasqueron/openfire/latest/rootfs/data/logs/openfire:/var/log/openfire
