@@ -1,0 +1,41 @@
+# nginx proxy address - http://172.17.0.1:59092
+
+name: openfire
+x-logging: &default-logging
+  options:
+    max-size: '5m'
+    max-file: '1'
+  driver: json-file
+
+services:
+  app:
+    image: nasqueron/openfire:latest
+    container_name: openfire-app
+    domainname: ${BASE_DOMAIN_NAME:-}
+    hostname: ${BASE_HOST_NAME:-$HOSTNAME}
+    restart: always
+    pull_policy: always
+    tty: true
+    logging: *default-logging
+    environment:
+      - TZ=${TZ:-America/New_York}
+    ports:
+      - '5222:5222'
+      - '5223:5223'
+      - '5275:5275'
+      - '7070:7070'
+      - '7443:7443'
+      - '7777:7777'
+      - '10000-10020:10000-10020'
+      - '172.17.0.1:59092:9090'
+    volumes:
+      - './rootfs/data/logs:/var/log/openfire'
+      - './rootfs/config/openfire:/var/lib/openfire'
+      - './rootfs/data/openfire/plugin-admin:/usr/share/openfire/plugin-admin'
+    networks:
+      - openfire
+
+networks:
+  openfire:
+    name: openfire
+    external: false
