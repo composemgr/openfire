@@ -45,9 +45,9 @@ See `docker-compose.yaml` for complete list of configurable options.
 
 ## 📂 Volumes
 
-- `./rootfs/data/log/openfire` - Data storage
-- `./rootfs/config/openfire` - Data storage
-- `./rootfs/data/openfire/plugin-admin` - Data storage
+- `./volumes/data/log/openfire` - Data storage
+- `./volumes/config/openfire` - Data storage
+- `./volumes/data/openfire/plugin-admin` - Data storage
 
 ## 🔍 Logging
 
