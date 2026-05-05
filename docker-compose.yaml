@@ -29,9 +29,9 @@ services:
       - '10000-10020:10000-10020'
       - '172.17.0.1:59092:9090'
     volumes:
-      - './rootfs/data/log/openfire:/var/log/openfire'
-      - './rootfs/config/openfire:/var/lib/openfire'
-      - './rootfs/data/openfire/plugin-admin:/usr/share/openfire/plugin-admin'
+      - './volumes/data/log/openfire:/var/log/openfire'
+      - './volumes/config/openfire:/var/lib/openfire'
+      - './volumes/data/openfire/plugin-admin:/usr/share/openfire/plugin-admin'
     networks:
       - openfire
 
