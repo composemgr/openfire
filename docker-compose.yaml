@@ -11,7 +11,7 @@ services:
   app:
     image: nasqueron/openfire:latest
     container_name: openfire-app
-    domainname: ${BASE_DOMAIN_NAME:-}
+    domainname: ${BASE_DOMAIN_NAME:-example.com}
     hostname: ${BASE_HOST_NAME:-$HOSTNAME}
     restart: always
     pull_policy: always
@@ -20,13 +20,12 @@ services:
     environment:
       TZ: ${TZ:-America/New_York}
     ports:
-      - '5222:5222'
-      - '5223:5223'
-      - '5275:5275'
-      - '7070:7070'
-      - '7443:7443'
-      - '7777:7777'
-      - '10000-10020:10000-10020'
+      - '172.17.0.1:5222:5222'
+      - '172.17.0.1:5223:5223'
+      - '172.17.0.1:5275:5275'
+      - '172.17.0.1:7070:7070'
+      - '172.17.0.1:7443:7443'
+      - '172.17.0.1:7777:7777'
       - '172.17.0.1:59092:9090'
     volumes:
       - './volumes/data/log/openfire:/var/log/openfire'
