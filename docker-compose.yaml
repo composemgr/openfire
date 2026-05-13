@@ -19,6 +19,8 @@ services:
     logging: *default-logging
     environment:
       TZ: ${TZ:-America/New_York}
+      CONTAINER_NAME: openfire-app
+      HOSTNAME: ${BASE_HOST_NAME:-$HOSTNAME}
     ports:
       - '172.17.0.1:5222:5222'
       - '172.17.0.1:5223:5223'
@@ -33,8 +35,30 @@ services:
       - './volumes/data/openfire/plugin-admin:/usr/share/openfire/plugin-admin'
     networks:
       - openfire
+      - proxy
+      - cloudflare
+    labels:
+      - 'traefik.enable=true'
+      - 'cloudflare.enable=true'
+      - 'traefik.docker.network=proxy'
+      - 'cloudflare.service=http://openfire-app:9090'
+      - 'cloudflare.hostname=openfire.${CLOUDFLARE_ZONE_NAME:-}'
+      - 'traefik.http.routers.openfire-app.entrypoints=http'
+      - 'traefik.http.routers.openfire-app-secure.tls=true'
+      - 'traefik.http.routers.openfire-app.rule=Host($(${BASE_HOST_NAME:-$HOSTNAME}))'
+      - 'traefik.http.middlewares.openfire-app-https-redirect.redirectscheme.scheme=https'
+      - 'traefik.http.routers.openfire-app.middlewares=openfire-app-https-redirect'
+      - 'traefik.http.routers.openfire-app-secure.entrypoints=https'
+      - 'traefik.http.routers.openfire-app-secure.rule=Host($(${BASE_HOST_NAME:-$HOSTNAME}))'
+      - 'traefik.http.routers.openfire-app-secure.tls.certresolver=cloudflare'
+      - 'traefik.http.routers.openfire-app-secure.service=openfire-app'
+      - 'traefik.http.services.openfire-app.loadbalancer.server.port=9090'
 
 networks:
   openfire:
     name: openfire
     external: false
+  proxy:
+    external: true
+  cloudflare:
+    external: true
