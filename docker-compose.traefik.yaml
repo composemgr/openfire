@@ -1,0 +1,46 @@
+name: openfire
+x-logging: &default-logging
+  options:
+    max-size: '5m'
+    max-file: '1'
+  driver: json-file
+
+services:
+  server:
+    image: nasqueron/openfire:latest
+    container_name: openfire-server
+    domainname: ${BASE_DOMAIN_NAME:-example.com}
+    hostname: ${BASE_HOST_NAME:-$HOSTNAME}
+    restart: always
+    pull_policy: always
+    logging: *default-logging
+    environment:
+      TZ: ${TZ:-America/New_York}
+      CONTAINER_NAME: openfire-server
+      HOSTNAME: ${BASE_HOST_NAME:-$HOSTNAME}
+    volumes:
+      - './volumes/config/openfire:/var/lib/openfire'
+      - './volumes/data/log/openfire:/var/log/openfire'
+      - './volumes/data/openfire/plugin-admin:/usr/share/openfire/plugin-admin'
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.docker.network=traefik'
+      - 'traefik.http.routers.openfire-server.entrypoints=http'
+      - 'traefik.http.routers.openfire-server.rule=Host(`${BASE_HOST_NAME:-$HOSTNAME}`)'
+      - 'traefik.http.routers.openfire-server.middlewares=openfire-server-https-redirect'
+      - 'traefik.http.middlewares.openfire-server-https-redirect.redirectscheme.scheme=https'
+      - 'traefik.http.routers.openfire-server-secure.entrypoints=https'
+      - 'traefik.http.routers.openfire-server-secure.rule=Host(`${BASE_HOST_NAME:-$HOSTNAME}`)'
+      - 'traefik.http.routers.openfire-server-secure.tls.certresolver=cloudflare'
+      - 'traefik.http.routers.openfire-server-secure.service=openfire-server'
+      - 'traefik.http.services.openfire-server.loadbalancer.server.port=9090'
+    networks:
+      - openfire
+      - traefik
+
+networks:
+  openfire:
+    name: openfire
+    external: false
+  traefik:
+    external: true

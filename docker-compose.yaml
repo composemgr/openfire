@@ -1,4 +1,4 @@
-# nginx proxy address - http://172.17.0.1:59092
+# nginx proxy address - http://172.17.0.1:64284
 
 name: openfire
 x-logging: &default-logging
@@ -8,57 +8,28 @@ x-logging: &default-logging
   driver: json-file
 
 services:
-  app:
+  server:
     image: nasqueron/openfire:latest
-    container_name: openfire-app
+    container_name: openfire-server
     domainname: ${BASE_DOMAIN_NAME:-example.com}
     hostname: ${BASE_HOST_NAME:-$HOSTNAME}
     restart: always
     pull_policy: always
-    tty: true
     logging: *default-logging
     environment:
       TZ: ${TZ:-America/New_York}
-      CONTAINER_NAME: openfire-app
+      CONTAINER_NAME: openfire-server
       HOSTNAME: ${BASE_HOST_NAME:-$HOSTNAME}
     ports:
-      - '172.17.0.1:5222:5222'
-      - '172.17.0.1:5223:5223'
-      - '172.17.0.1:5275:5275'
-      - '172.17.0.1:7070:7070'
-      - '172.17.0.1:7443:7443'
-      - '172.17.0.1:7777:7777'
-      - '172.17.0.1:59092:9090'
+      - '172.17.0.1:64284:9090'
     volumes:
-      - './volumes/data/log/openfire:/var/log/openfire'
       - './volumes/config/openfire:/var/lib/openfire'
+      - './volumes/data/log/openfire:/var/log/openfire'
       - './volumes/data/openfire/plugin-admin:/usr/share/openfire/plugin-admin'
     networks:
       - openfire
-      - proxy
-      - cloudflare
-    labels:
-      - 'traefik.enable=true'
-      - 'cloudflare.enable=true'
-      - 'traefik.docker.network=proxy'
-      - 'cloudflare.service=http://openfire-app:9090'
-      - 'cloudflare.hostname=openfire.${CLOUDFLARE_ZONE_NAME:-}'
-      - 'traefik.http.routers.openfire-app.entrypoints=http'
-      - 'traefik.http.routers.openfire-app-secure.tls=true'
-      - 'traefik.http.routers.openfire-app.rule=Host($(${BASE_HOST_NAME:-$HOSTNAME}))'
-      - 'traefik.http.middlewares.openfire-app-https-redirect.redirectscheme.scheme=https'
-      - 'traefik.http.routers.openfire-app.middlewares=openfire-app-https-redirect'
-      - 'traefik.http.routers.openfire-app-secure.entrypoints=https'
-      - 'traefik.http.routers.openfire-app-secure.rule=Host($(${BASE_HOST_NAME:-$HOSTNAME}))'
-      - 'traefik.http.routers.openfire-app-secure.tls.certresolver=cloudflare'
-      - 'traefik.http.routers.openfire-app-secure.service=openfire-app'
-      - 'traefik.http.services.openfire-app.loadbalancer.server.port=9090'
 
 networks:
   openfire:
     name: openfire
     external: false
-  proxy:
-    external: true
-  cloudflare:
-    external: true
