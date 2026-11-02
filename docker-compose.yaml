@@ -22,6 +22,18 @@ services:
       HOSTNAME: ${BASE_HOST_NAME:-$HOSTNAME}
     ports:
       - '172.17.0.1:64284:9090'
+      - '3478:3478'
+      - '3479:3479'
+      - '5222:5222'
+      - '5223:5223'
+      - '5229:5229'
+      - '5262:5262'
+      - '5263:5263'
+      - '5275:5275'
+      - '5276:5276'
+      - '7070:7070'
+      - '7443:7443'
+      - '7777:7777'
     volumes:
       - './volumes/config/openfire:/var/lib/openfire'
       - './volumes/data/log/openfire:/var/log/openfire'

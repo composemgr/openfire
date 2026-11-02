@@ -88,6 +88,8 @@ docker compose -f docker-compose.traefik.yaml --env-file .env up -d
 
 - **Web Interface**: http://172.17.0.1:64284
 
+Non-HTTP protocol ports are published identically in all three compose variants, because they cannot be proxied over HTTP: `3478`, `3479`, `5222`, `5223`, `5229`, `5262`, `5263`, `5275`, `5276`, `7070`, `7443`, `7777` (XMPP and related).
+
 ## 📂 Volumes
 
 - `./volumes/config/openfire` - Configuration and embedded database
